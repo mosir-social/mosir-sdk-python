@@ -16,22 +16,9 @@ async def test_client_uses_default_endpoint() -> None:
 
 
 @pytest.mark.asyncio
-async def test_public_post_request() -> None:
+async def test_pythonic_get_post_request() -> None:
     async with AsyncMosirClient() as client:
-        data = await client.request(
-            """
-            query GetPost($postId: ID!) {
-              getPost(postId: $postId) {
-                id
-                content
-                author {
-                  username
-                }
-              }
-            }
-            """,
-            {"postId": "VLO8u7UXqclQ7byjfMEX0"},
-        )
+        data = await client.get_post(post_id="VLO8u7UXqclQ7byjfMEX0")
 
     assert data["getPost"]["id"] == "VLO8u7UXqclQ7byjfMEX0"
     assert data["getPost"]["author"]["username"] == "leemiyinghao"

@@ -13,8 +13,10 @@ from .exceptions import GraphQLRequestError, GraphQLTransportError
 DEFAULT_ENDPOINT = "https://beta.mosir.app/api/v1"
 JSONMapping: TypeAlias = dict[str, Any]
 
+from ._generated_client import GeneratedOperationMethods  # noqa: E402
 
-class AsyncMosirClient:
+
+class AsyncMosirClient(GeneratedOperationMethods):
     """Async client for the Mosir public GraphQL API."""
 
     def __init__(

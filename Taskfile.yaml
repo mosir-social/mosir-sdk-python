@@ -11,18 +11,32 @@ tasks:
     cmds:
       - uv run python -m compileall src
 
+  codegen:
+    desc: Generate pythonic operation wrappers from public.operations.graphql
+    cmds:
+      - uv run python ./scripts/generate_operations.py
+    sources:
+      - ./public.operations.graphql
+      - ./scripts/generate_operations.py
+    generates:
+      - ./src/mosir_sdk/_operations.py
+      - ./src/mosir_sdk/_generated_client.py
+
   pyright:
     desc: Run pyright type checking
+    deps: [codegen]
     cmds:
       - uv run pyright
 
   test:
     desc: Run pytest
+    deps: [codegen]
     cmds:
       - uv run pytest
 
   check:
     desc: Run project checks
+    deps: [codegen]
     cmds:
       - uv run pyright
       - uv run pytest

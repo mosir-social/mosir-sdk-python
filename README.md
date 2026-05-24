@@ -8,6 +8,7 @@ Early scaffold.
 
 Current focus:
 - async transport with `httpx`
+- generated snake_case wrappers from `public.operations.graphql`
 - SSE subscriptions with `httpx-sse`
 - optional Bearer token auth
 - shared public artifacts:
@@ -30,21 +31,11 @@ from mosir_sdk import AsyncMosirClient
 
 async def main() -> None:
     async with AsyncMosirClient() as client:
-        post = await client.request(
-            """
-            query GetPost($postId: ID!) {
-              getPost(postId: $postId) {
-                id
-                content
-                author {
-                  username
-                }
-              }
-            }
-            """,
-            {"postId": "VLO8u7UXqclQ7byjfMEX0"},
-        )
-        print(post)
+        post = await client.get_post(post_id="VLO8u7UXqclQ7byjfMEX0")
+        print(post["getPost"])
+
+        notifications = await client.get_notifications(limit=20)
+        print(notifications["getNotifications"])
 
 
 asyncio.run(main())
@@ -54,6 +45,7 @@ asyncio.run(main())
 
 ```bash
 task install
+task codegen
 task pyright
 task test
 task smoke

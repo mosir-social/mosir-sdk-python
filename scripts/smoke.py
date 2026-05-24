@@ -9,20 +9,7 @@ POST_ID = "VLO8u7UXqclQ7byjfMEX0"
 
 async def main() -> None:
     async with AsyncMosirClient() as client:
-        data = await client.request(
-            """
-            query GetPost($postId: ID!) {
-              getPost(postId: $postId) {
-                id
-                content
-                author {
-                  username
-                }
-              }
-            }
-            """,
-            {"postId": POST_ID},
-        )
+        data = await client.get_post(post_id=POST_ID)
         print(data)
 
 
