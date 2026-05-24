@@ -4,7 +4,7 @@ Python SDK for the Mosir public GraphQL API.
 
 ## Status
 
-Early scaffold, but already usable.
+Production-ready async client library.
 
 Current focus:
 - async transport with `httpx`
