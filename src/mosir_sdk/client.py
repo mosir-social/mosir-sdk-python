@@ -2,22 +2,25 @@ from __future__ import annotations
 
 import json
 from collections.abc import AsyncIterator, Awaitable, Mapping
-from typing import Any, TypeAlias
+from typing import Any, TypeAlias, cast
 
 import httpx
 from graphql import OperationDefinitionNode, OperationType, get_operation_ast, parse
 from httpx_sse import aconnect_sse
 
+from ._operations import OPERATION_REGISTRY, OperationSpec
 from .exceptions import GraphQLRequestError, GraphQLTransportError
 
 DEFAULT_ENDPOINT = "https://beta.mosir.app/api/v1"
 JSONMapping: TypeAlias = dict[str, Any]
 
-from ._generated_client import GeneratedOperationMethods  # noqa: E402
 
+class AsyncMosirClient:
+    """Async client for the Mosir public GraphQL API.
 
-class AsyncMosirClient(GeneratedOperationMethods):
-    """Async client for the Mosir public GraphQL API."""
+    Wrapped snake_case methods are resolved dynamically from `public.operations.graphql`.
+    For example: `get_post(...)`, `get_notifications(...)`, `post_updated(...)`.
+    """
 
     def __init__(
         self,
@@ -39,6 +42,22 @@ class AsyncMosirClient(GeneratedOperationMethods):
 
     async def __aexit__(self, exc_type: object, exc: object, tb: object) -> None:
         await self.aclose()
+
+    def __getattr__(self, name: str) -> Any:
+        spec = OPERATION_REGISTRY.get(name)
+        if spec is None:
+            raise AttributeError(f"{type(self).__name__!s} has no attribute {name!r}")
+
+        if spec.operation_type == "subscription":
+            def subscription_method(**variables: Any) -> AsyncIterator[JSONMapping]:
+                return self.subscribe_operation(name, **variables)
+
+            return subscription_method
+
+        async def operation_method(**variables: Any) -> JSONMapping:
+            return await self.operation(name, **variables)
+
+        return operation_method
 
     async def aclose(self) -> None:
         if self._owns_client:
@@ -86,6 +105,28 @@ class AsyncMosirClient(GeneratedOperationMethods):
             headers=headers,
         )
 
+    async def operation(self, name: str, /, **variables: Any) -> JSONMapping:
+        spec = _get_operation_spec(name)
+        if spec.operation_type == "subscription":
+            raise ValueError(f"Operation {name!r} is a subscription. Use subscribe_operation(...).")
+
+        return await self.request(
+            spec.document,
+            _normalize_variables(variables, spec.variable_map) or None,
+            operation_name=spec.operation_name,
+        )
+
+    def subscribe_operation(self, name: str, /, **variables: Any) -> AsyncIterator[JSONMapping]:
+        spec = _get_operation_spec(name)
+        if spec.operation_type != "subscription":
+            raise ValueError(f"Operation {name!r} is not a subscription. Use operation(...).")
+
+        return self.subscribe(
+            spec.document,
+            _normalize_variables(variables, spec.variable_map) or None,
+            operation_name=spec.operation_name,
+        )
+
     def subscribe(
         self,
         document: str,
@@ -119,7 +160,9 @@ class AsyncMosirClient(GeneratedOperationMethods):
 
                     data = payload.get("data")
                     if data is not None:
-                        yield data
+                        if not isinstance(data, dict):
+                            raise GraphQLTransportError("Expected a GraphQL data object in the SSE payload.")
+                        yield cast(JSONMapping, data)
 
         return iterator()
 
@@ -130,6 +173,20 @@ class AsyncMosirClient(GeneratedOperationMethods):
         if headers:
             merged.update(headers)
         return merged
+
+
+def _get_operation_spec(name: str) -> OperationSpec:
+    spec = OPERATION_REGISTRY.get(name)
+    if spec is None:
+        raise KeyError(f"Unknown Mosir operation: {name}")
+    return spec
+
+
+def _normalize_variables(variables: Mapping[str, Any], variable_map: Mapping[str, str]) -> dict[str, Any]:
+    normalized: dict[str, Any] = {}
+    for key, value in variables.items():
+        normalized[variable_map.get(key, key)] = value
+    return normalized
 
 
 def _build_payload(
@@ -172,4 +229,4 @@ def _parse_json_response(response: httpx.Response) -> JSONMapping:
     if not isinstance(data, dict):
         raise GraphQLTransportError("Expected a GraphQL data object in the response.")
 
-    return data
+    return cast(JSONMapping, data)

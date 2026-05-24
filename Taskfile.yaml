@@ -17,7 +17,7 @@ tasks:
       - uv sync
 
   codegen:
-    desc: Generate pythonic operation wrappers from public.operations.graphql
+    desc: Generate operation registry from public.operations.graphql
     cmds:
       - uv run python ./scripts/generate_operations.py
     sources:
@@ -25,7 +25,6 @@ tasks:
       - ./scripts/generate_operations.py
     generates:
       - ./src/mosir_sdk/_operations.py
-      - ./src/mosir_sdk/_generated_client.py
 
   pyright:
     desc: Run pyright type checking

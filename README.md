@@ -8,7 +8,7 @@ Early scaffold, but already usable.
 
 Current focus:
 - async transport with `httpx`
-- generated snake_case wrappers from `public.operations.graphql`
+- dynamic snake_case wrappers resolved from `public.operations.graphql`
 - SSE subscriptions with `httpx-sse`
 - optional Bearer token auth
 - shared public artifacts:
@@ -62,10 +62,13 @@ asyncio.run(main())
 
 - default endpoint: `https://beta.mosir.app/api/v1`
 - `token` is optional
-- generated methods are snake_case, for example:
+- snake_case methods are resolved dynamically from the operation registry, for example:
   - `get_post(...)`
   - `get_notifications(...)`
   - `post_updated(...)`
+- explicit operation access is also available:
+  - `await client.operation("get_post", post_id="...")`
+  - `client.subscribe_operation("post_updated", post_id="...")`
 - raw GraphQL is still available through:
   - `await client.request(...)`
   - `client.subscribe(...)`
