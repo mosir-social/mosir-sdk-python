@@ -103,17 +103,38 @@ asyncio.run(main())
 
 ### SSE subscription example
 
+Subscriptions let your app receive updates from Mosir in near real time without polling.
+This SDK uses **SSE** (Server-Sent Events) for subscriptions.
+
+A good example is a Discord bot:
+- subscribe to `post_created_by_author(...)`
+- when a creator publishes something new, turn it into a message
+- send that message into a Discord channel
+
+That way the bot reacts immediately instead of polling the API on a timer.
+SSE works especially well for long-running workers, bots, and notification bridges that only need a one-way event stream from the server.
+For public subscriptions like `post_created_by_author(...)`, a token is not required.
+
+Note: each SSE connection lasts at most 1 hour. In practice, network conditions may cause it to end earlier.
+If you build a bot, worker, or relay process, make sure you implement reconnect logic.
+
 ```python
 import asyncio
-import os
 
 from mosir_sdk import AsyncMosirClient
 
 
 async def main() -> None:
-    async with AsyncMosirClient(token=os.getenv("MOSIR_API_TOKEN")) as client:
-        async for event in client.post_updated(post_id="VLO8u7UXqclQ7byjfMEX0"):
-            print(event["postUpdated"]["id"])
+    async with AsyncMosirClient() as client:
+        profile = await client.get_account_profile(username="leemiyinghao")
+        author_id = profile["getAccountProfile"]["id"]
+
+        async for event in client.post_created_by_author(
+            author_id=author_id,
+            post_type="POST",
+        ):
+            print(event["postCreatedByAuthor"]["id"])
+            print(event["postCreatedByAuthor"]["content"])
             break
 
 
@@ -124,10 +145,11 @@ asyncio.run(main())
 
 - default endpoint: `https://beta.mosir.app/api/v1`
 - `token` is optional for public data and required only for authenticated operations
+- the same applies to subscriptions: public subscription data does not require a token
 - snake_case methods are resolved dynamically from the operation registry, for example:
   - `get_post(...)`
   - `get_notifications(...)`
-  - `post_updated(...)`
+  - `post_created_by_author(...)`
 - media helpers are available through:
   - `select_media_file(...)`
   - `await client.fetch_media(...)`
@@ -136,7 +158,8 @@ asyncio.run(main())
   - `await client.fetch_preview_image(...)`
 - explicit operation access is also available:
   - `await client.operation("get_post", post_id="...")`
-  - `client.subscribe_operation("post_updated", post_id="...")`
+  - `client.subscribe_operation("post_created_by_author", author_id="...", post_type="POST")`
+    - you can resolve `author_id` first with `get_account_profile(username="...")`
 - raw GraphQL is still available through:
   - `await client.request(...)`
   - `client.subscribe(...)`
