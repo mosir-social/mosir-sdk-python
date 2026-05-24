@@ -11,10 +11,10 @@ tasks:
     cmds:
       - uv run python -m compileall src
 
-  install:
-    desc: Install dependencies with uv
+  clean:
+    desc: Remove local build artifacts
     cmds:
-      - uv sync
+      - rm -rf build dist src/*.egg-info .pytest_cache
 
   codegen:
     desc: Generate operation registry from public.operations.graphql
@@ -38,12 +38,26 @@ tasks:
     cmds:
       - uv run pytest
 
+  build:
+    desc: Build wheel and source distribution
+    deps: [codegen]
+    cmds:
+      - task: clean
+      - uv build
+
+  package-check:
+    desc: Validate package metadata and distribution rendering
+    deps: [build]
+    cmds:
+      - uvx twine check dist/*
+
   check:
     desc: Run project checks
     deps: [codegen]
     cmds:
       - uv run pyright
       - uv run pytest
+      - task: package-check
 
   smoke:
     desc: Run a small live API smoke check

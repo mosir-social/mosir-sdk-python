@@ -1,0 +1,5 @@
+include LICENSE
+include README.md
+include public.graphqls
+include public.operations.graphql
+recursive-include tests *.py

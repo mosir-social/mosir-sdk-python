@@ -8,6 +8,16 @@ authors = [
 ]
 requires-python = ">=3.12"
 license = "LGPL-3.0-or-later"
+keywords = ["graphql", "httpx", "mosir", "sdk", "sse"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = [
     "graphql-core>=3.2.8",
     "httpx>=0.28.1",
@@ -19,10 +29,18 @@ dependencies = [
 Homepage = "https://beta.mosir.app"
 Repository = "https://github.com/mosir-social/mosir-sdk-python"
 Issues = "https://github.com/mosir-social/mosir-sdk-python/issues"
+Documentation = "https://github.com/mosir-social/mosir-sdk-python#readme"
 
 [build-system]
-requires = ["uv_build>=0.11.4,<0.12.0"]
-build-backend = "uv_build"
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["mosir_sdk*", "mosir_sdk_python*"]
 
 [dependency-groups]
 dev = [

@@ -17,6 +17,20 @@ Current focus:
 
 ## Install
 
+For package users:
+
+```bash
+pip install mosir-sdk-python
+```
+
+or:
+
+```bash
+uv add mosir-sdk-python
+```
+
+For local development in this repository:
+
 ```bash
 uv sync
 ```
@@ -164,6 +178,21 @@ asyncio.run(main())
   - `await client.request(...)`
   - `client.subscribe(...)`
 
+## Release / publish prep
+
+Build and validate distributions before uploading to PyPI:
+
+```bash
+task build
+task package-check
+```
+
+Typical upload flow:
+
+```bash
+uvx twine upload dist/*
+```
+
 ## Tasks
 
 ```bash
@@ -171,5 +200,7 @@ task install
 task codegen
 task pyright
 task test
+task build
+task package-check
 task smoke
 ```
