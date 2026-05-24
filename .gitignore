@@ -6,7 +6,6 @@ dist/
 wheels/
 *.egg-info
 src/*.egg-info
-src/mosir_sdk_python.egg-info
 
 # Virtual environments
 .venv

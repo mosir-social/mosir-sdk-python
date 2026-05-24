@@ -2,4 +2,5 @@ include LICENSE
 include README.md
 include public.graphqls
 include public.operations.graphql
+recursive-include src *.typed
 recursive-include tests *.py

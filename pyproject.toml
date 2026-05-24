@@ -12,7 +12,6 @@ keywords = ["graphql", "httpx", "mosir", "sdk", "sse"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
     "Topic :: Internet :: WWW/HTTP",
@@ -40,7 +39,10 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["mosir_sdk*", "mosir_sdk_python*"]
+include = ["mosir_sdk*"]
+
+[tool.setuptools.package-data]
+"mosir_sdk" = ["py.typed"]
 
 [dependency-groups]
 dev = [
