@@ -1,0 +1,27 @@
+version: '3'
+
+tasks:
+  install:
+    desc: Install dependencies with uv
+    cmds:
+      - uv sync
+
+  format:
+    desc: Placeholder for formatting tasks
+    cmds:
+      - uv run python -m compileall src
+
+  pyright:
+    desc: Run pyright type checking
+    cmds:
+      - uv run pyright
+
+  check:
+    desc: Run project checks
+    cmds:
+      - uv run pyright
+
+  smoke:
+    desc: Run a small live API smoke check
+    cmds:
+      - uv run python ./scripts/smoke.py

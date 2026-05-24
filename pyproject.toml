@@ -1,0 +1,36 @@
+[project]
+name = "mosir-sdk-python"
+version = "0.1.0"
+description = "Python SDK for the Mosir public GraphQL API"
+readme = "README.md"
+authors = [
+    { name = "catLee", email = "leemiyinghao@gmx.com" }
+]
+requires-python = ">=3.12"
+license = "LGPL-3.0-or-later"
+dependencies = [
+    "graphql-core>=3.2.8",
+    "httpx>=0.28.1",
+    "httpx-sse>=0.4.3",
+    "pydantic>=2.13.4",
+]
+
+[project.urls]
+Homepage = "https://beta.mosir.app"
+Repository = "https://github.com/mosir-social/mosir-sdk-python"
+Issues = "https://github.com/mosir-social/mosir-sdk-python/issues"
+
+[build-system]
+requires = ["uv_build>=0.11.4,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.409",
+]
+
+[tool.pyright]
+include = ["src", "scripts"]
+typeCheckingMode = "basic"
+venvPath = "."
+venv = ".venv"

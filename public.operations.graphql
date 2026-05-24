@@ -1,0 +1,649 @@
+# Curated named public operations for SDK and client generation across languages.
+# Keep this file valid against generated/public.graphqls.
+
+fragment PageInfoFields on PageInfo {
+  endCursor
+  hasNextPage
+  totalCount
+}
+
+fragment AccountFields on Account {
+  id
+  username
+  email
+  createdAt
+  lastLogin
+  status
+}
+
+fragment AspectRatioFields on AspectRatio {
+  numerator
+  denominator
+}
+
+fragment MediaFileMetadataFields on MediaFileMetadata {
+  id
+  mediaId
+  profile
+  contentType
+  url
+}
+
+fragment MediaMetadataFields on MediaMetadata {
+  id
+  accountID
+  aspectRatio {
+    ...AspectRatioFields
+  }
+  blurHash
+  durationMs
+  files {
+    ...MediaFileMetadataFields
+  }
+  status
+  type
+}
+
+fragment BlockStatusInfoFields on BlockStatusInfo {
+  blockStatus
+  isBlocked
+}
+
+fragment ProfileFollowStatusFields on ProfileFollowStatus {
+  followingLevel
+  isFollowedBy
+  isFollowing
+}
+
+fragment ReactionTypeFields on ReactionType {
+  emojiValue
+  nativeValue
+}
+
+fragment ReactionSummaryFields on ReactionSummary {
+  count
+  isReactedByViewer
+  type {
+    ...ReactionTypeFields
+  }
+}
+
+fragment PostReactionsConnectionFields on PostReactionsConnection {
+  postId
+  queryLimit
+  remainingCount
+  viewerId
+  reactions {
+    ...ReactionSummaryFields
+  }
+}
+
+fragment PostOperationPermissionFields on PostOperationPermission {
+  canComment
+  canReact
+}
+
+fragment PostVisibilityFields on PostVisibility {
+  policy
+  profileTags
+  pushPolicy
+}
+
+fragment PostOptionsFields on PostOptions {
+  commentPolicy
+  copyPolicy
+  reactionPolicy
+  postVisibility {
+    ...PostVisibilityFields
+  }
+}
+
+fragment LinkPreviewFields on LinkPreview {
+  Url
+  canonicalUrl
+  resourceType
+  summary
+  thumbnailUrl
+  title
+}
+
+fragment TopicFields on Topic {
+  id
+  emoji
+  title
+}
+
+fragment ProfileReferenceFields on Profile {
+  id
+  username
+  displayName
+  profileEmoji
+  profileMediaId
+}
+
+fragment PostReferenceFields on Post {
+  id
+  authorID
+  content
+  createdAt
+  parentPostId
+  commentCount
+}
+
+fragment PostCollectionReferenceFields on PostCollection {
+  id
+  authorID
+  coverMediaID
+  createdAt
+  description
+  followLevel
+  postCount
+  title
+  updatedAt
+}
+
+fragment AttachmentIDFields on AttachmentID {
+  type
+  embeddedCollectionId
+  embeddedPostId
+  embeddedProfileId
+  linkUrl
+  mediaId
+}
+
+fragment AttachmentFields on Attachment {
+  type
+  linkPreview {
+    ...LinkPreviewFields
+  }
+  media {
+    ...MediaMetadataFields
+  }
+  embeddedProfile {
+    ...ProfileReferenceFields
+  }
+  embeddedPost {
+    ...PostReferenceFields
+  }
+  embeddedCollection {
+    ...PostCollectionReferenceFields
+  }
+}
+
+fragment ProfileTagFields on ProfileTag {
+  id
+  name
+  memberCount
+  AuthorID
+  Author {
+    ...ProfileReferenceFields
+  }
+}
+
+fragment ProfileFields on Profile {
+  id
+  username
+  displayName
+  bio
+  joinedAt
+  followerCount
+  followingCount
+  preferInteractionType
+  profileEmoji
+  profileMediaId
+  viewerId
+  blockingStatus {
+    ...BlockStatusInfoFields
+  }
+  pinnedPostCollectionId
+  pinnedPostCollection {
+    ...PostCollectionReferenceFields
+  }
+  profileFollowStatus {
+    ...ProfileFollowStatusFields
+  }
+  profileMedia {
+    ...MediaMetadataFields
+  }
+  tags {
+    ...ProfileTagFields
+  }
+}
+
+fragment PostCollectionFields on PostCollection {
+  id
+  authorID
+  coverMediaID
+  createdAt
+  description
+  followLevel
+  postCount
+  title
+  updatedAt
+  author {
+    ...ProfileReferenceFields
+  }
+  coverMedia {
+    ...MediaMetadataFields
+  }
+}
+
+fragment MonoPostDraftFields on MonoPostDraft {
+  content
+  attachmentIds {
+    ...AttachmentIDFields
+  }
+  attachments {
+    ...AttachmentFields
+  }
+  postCollectionIds
+  postCollections {
+    ...PostCollectionReferenceFields
+  }
+  postOptions {
+    ...PostOptionsFields
+  }
+}
+
+fragment PostDraftFields on PostDraft {
+  id
+  createdAt
+  scheduledAt
+  updatedAt
+  postRequests {
+    ...MonoPostDraftFields
+  }
+}
+
+fragment PostFields on Post {
+  id
+  authorID
+  content
+  createdAt
+  parentPostId
+  commentCount
+  leafAncestorIds
+  rootAncestorIds
+  author {
+    ...ProfileReferenceFields
+  }
+  attachmentIds {
+    ...AttachmentIDFields
+  }
+  attachments {
+    ...AttachmentFields
+  }
+  postCollections {
+    ...PostCollectionReferenceFields
+  }
+  postOperationPermission {
+    ...PostOperationPermissionFields
+  }
+  postOptions {
+    ...PostOptionsFields
+  }
+  reactions(first: 20) {
+    ...PostReactionsConnectionFields
+  }
+}
+
+fragment FeedPostEdgeFields on FeedPostEdge {
+  id
+  post {
+    ...PostFields
+  }
+}
+
+fragment FeedPostConnectionFields on FeedPostConnection {
+  edges {
+    ...FeedPostEdgeFields
+  }
+  pageInfo {
+    ...PageInfoFields
+  }
+}
+
+fragment PostConnectionFields on PostConnection {
+  edges {
+    ...PostFields
+  }
+  pageInfo {
+    ...PageInfoFields
+  }
+}
+
+fragment ProfileConnectionFields on ProfileConnection {
+  edges {
+    ...ProfileFields
+  }
+  pageInfo {
+    ...PageInfoFields
+  }
+}
+
+fragment PostCollectionConnectionFields on PostCollectionConnection {
+  edges {
+    ...PostCollectionFields
+  }
+  pageInfo {
+    ...PageInfoFields
+  }
+}
+
+fragment NotificationFields on Notification {
+  id
+  createdAt
+  isRead
+  message
+  type
+  relatedPostID
+  relatedPostCollectionID
+  sourceProfileID
+  targetProfileID
+  reaction {
+    ...ReactionTypeFields
+  }
+  relatedPost {
+    ...PostReferenceFields
+  }
+  relatedPostCollection {
+    ...PostCollectionReferenceFields
+  }
+  sourceProfile {
+    ...ProfileReferenceFields
+  }
+  targetProfile {
+    ...ProfileReferenceFields
+  }
+}
+
+fragment NotificationConnectionFields on NotificationConnection {
+  edges {
+    ...NotificationFields
+  }
+  pageInfo {
+    ...PageInfoFields
+  }
+}
+
+fragment ReactionDetailRecordFields on ReactionDetailRecord {
+  accountId
+  createdAt
+  profile {
+    ...ProfileReferenceFields
+  }
+  type {
+    ...ReactionTypeFields
+  }
+}
+
+fragment PostReactionDetailRecordConnectionFields on PostReactionDetailRecordConnection {
+  pageInfo {
+    ...PageInfoFields
+  }
+  reactionRecords {
+    ...ReactionDetailRecordFields
+  }
+}
+
+fragment UserReactionStatisticsFields on UserReactionStatistics {
+  count
+  type {
+    ...ReactionTypeFields
+  }
+}
+
+fragment UserReactionsStatisticsConnectionFields on UserReactionsStatisticsConnection {
+  pageInfo {
+    ...PageInfoFields
+  }
+  reactions {
+    ...UserReactionStatisticsFields
+  }
+}
+
+fragment ProfileTagConnectionFields on ProfileTagConnection {
+  edges {
+    ...ProfileTagFields
+  }
+  pageInfo {
+    ...PageInfoFields
+  }
+}
+
+fragment PostDraftConnectionFields on PostDraftConnection {
+  edges {
+    ...PostDraftFields
+  }
+  pageInfo {
+    ...PageInfoFields
+  }
+}
+
+query GetAccountProfile($accountId: ID, $username: String) {
+  getAccountProfile(accountId: $accountId, username: $username) {
+    ...ProfileFields
+  }
+}
+
+query GetBlockedAccounts($cursor: String, $limit: Int) {
+  getBlockedAccounts(cursor: $cursor, limit: $limit) {
+    ...ProfileConnectionFields
+  }
+}
+
+query GetCurrentAccount {
+  getCurrentAccount {
+    ...AccountFields
+  }
+}
+
+query GetDiscussions($cursor: String, $limit: Int = 20) {
+  getDiscussions(cursor: $cursor, limit: $limit) {
+    ...FeedPostConnectionFields
+  }
+}
+
+query GetFeedPosts($cursor: String, $limit: Int = 20) {
+  getFeedPosts(cursor: $cursor, limit: $limit) {
+    ...FeedPostConnectionFields
+  }
+}
+
+query GetFollowedAccounts($accountId: ID!, $cursor: String, $limit: Int) {
+  getFollowedAccounts(accountId: $accountId, cursor: $cursor, limit: $limit) {
+    ...ProfileConnectionFields
+  }
+}
+
+query GetFollowedPostCollections($cursor: String, $limit: Int) {
+  getFollowedPostCollections(cursor: $cursor, limit: $limit) {
+    ...PostCollectionConnectionFields
+  }
+}
+
+query GetFollowingAccounts($accountId: ID!, $cursor: String, $limit: Int) {
+  getFollowingAccounts(accountId: $accountId, cursor: $cursor, limit: $limit) {
+    ...ProfileConnectionFields
+  }
+}
+
+query GetFollowingPosts($cursor: String, $limit: Int = 20) {
+  getFollowingPosts(cursor: $cursor, limit: $limit) {
+    ...FeedPostConnectionFields
+  }
+}
+
+query GetHistoryPosts($cursor: String, $includeOwnPosts: Boolean = false, $limit: Int = 20) {
+  getHistoryPosts(cursor: $cursor, includeOwnPosts: $includeOwnPosts, limit: $limit) {
+    ...FeedPostConnectionFields
+  }
+}
+
+query GetLinkPreview($url: String!) {
+  getLinkPreview(url: $url) {
+    ...LinkPreviewFields
+  }
+}
+
+query GetMedia($mediaId: ID!) {
+  getMedia(mediaId: $mediaId) {
+    ...MediaMetadataFields
+  }
+}
+
+query GetMutualFollowers($accountId: ID!, $cursor: String, $limit: Int) {
+  getMutualFollowers(accountId: $accountId, cursor: $cursor, limit: $limit) {
+    ...ProfileConnectionFields
+  }
+}
+
+query GetMyPostCollections($cursor: String, $limit: Int) {
+  getMyPostCollections(cursor: $cursor, limit: $limit) {
+    ...PostCollectionConnectionFields
+  }
+}
+
+query GetNotifications($cursor: String, $filter: NotificationFilterInput, $limit: Int = 20) {
+  getNotifications(cursor: $cursor, filter: $filter, limit: $limit) {
+    ...NotificationConnectionFields
+  }
+}
+
+query GetPopularPosts($cursor: String, $language: String, $limit: Int = 20) {
+  getPopularPosts(cursor: $cursor, language: $language, limit: $limit) {
+    ...FeedPostConnectionFields
+  }
+}
+
+query GetPost($postId: ID!) {
+  getPost(postId: $postId) {
+    ...PostFields
+  }
+}
+
+query GetPostCollection($id: ID!) {
+  getPostCollection(id: $id) {
+    ...PostCollectionFields
+  }
+}
+
+query GetPostCollectionsByAuthor($authorID: ID!, $cursor: String, $limit: Int) {
+  getPostCollectionsByAuthor(authorID: $authorID, cursor: $cursor, limit: $limit) {
+    ...PostCollectionConnectionFields
+  }
+}
+
+query GetPostDraft($id: ID!) {
+  getPostDraft(id: $id) {
+    ...PostDraftFields
+  }
+}
+
+query GetPostDrafts($cursor: String, $filter: PostDraftFilterInput, $limit: Int = 20) {
+  getPostDrafts(cursor: $cursor, filter: $filter, limit: $limit) {
+    ...PostDraftConnectionFields
+  }
+}
+
+query GetPostDraftsCount($filter: PostDraftFilterInput) {
+  getPostDraftsCount(filter: $filter)
+}
+
+query GetPostReactionDetails($cursor: String, $limit: Int = 20, $postId: ID!, $type: ReactionTypeInput) {
+  getPostReactionDetails(cursor: $cursor, limit: $limit, postId: $postId, type: $type) {
+    ...PostReactionDetailRecordConnectionFields
+  }
+}
+
+query GetPostReactions($first: Int, $postId: ID!) {
+  getPostReactions(first: $first, postId: $postId) {
+    ...PostReactionsConnectionFields
+  }
+}
+
+query GetProfileTagById($id: ID!) {
+  getProfileTagById(id: $id) {
+    ...ProfileTagFields
+  }
+}
+
+query GetProfileTagProfiles($cursor: String, $limit: Int, $tagId: ID!) {
+  getProfileTagProfiles(cursor: $cursor, limit: $limit, tagId: $tagId) {
+    ...ProfileConnectionFields
+  }
+}
+
+query GetReactedPosts($cursor: String, $limit: Int = 20, $reactionType: ReactionTypeInput!) {
+  getReactedPosts(cursor: $cursor, limit: $limit, reactionType: $reactionType) {
+    ...FeedPostConnectionFields
+  }
+}
+
+query GetTopicFeedPosts($cursor: String, $limit: Int = 20, $topicId: ID!) {
+  getTopicFeedPosts(cursor: $cursor, limit: $limit, topicId: $topicId) {
+    ...PostConnectionFields
+  }
+}
+
+query GetTopics($limit: Int = 20) {
+  getTopics(limit: $limit) {
+    ...TopicFields
+  }
+}
+
+query GetUnreadNotificationCount {
+  getUnreadNotificationCount
+}
+
+query GetUserPosts($accountId: ID!, $cursor: String, $limit: Int = 20, $postType: PostType = POST) {
+  getUserPosts(accountId: $accountId, cursor: $cursor, limit: $limit, postType: $postType) {
+    ...PostConnectionFields
+  }
+}
+
+query GetUserReactions($cursor: String, $limit: Int = 20) {
+  getUserReactions(cursor: $cursor, limit: $limit) {
+    ...UserReactionsStatisticsConnectionFields
+  }
+}
+
+query ListProfileTags($cursor: String, $limit: Int) {
+  listProfileTags(cursor: $cursor, limit: $limit) {
+    ...ProfileTagConnectionFields
+  }
+}
+
+subscription NotificationReceived {
+  notificationReceived {
+    ...NotificationFields
+  }
+}
+
+subscription PostCreatedByAuthor($authorId: ID!, $postType: PostType) {
+  postCreatedByAuthor(authorId: $authorId, postType: $postType) {
+    ...PostFields
+  }
+}
+
+subscription PostCreatedInCollection($postCollectionID: ID!) {
+  postCreatedInCollection(postCollectionID: $postCollectionID) {
+    ...PostFields
+  }
+}
+
+subscription PostDeleted($postId: ID!) {
+  postDeleted(postId: $postId)
+}
+
+subscription PostUpdated($postId: ID!) {
+  postUpdated(postId: $postId) {
+    ...PostFields
+  }
+}
+
+subscription ReplyCreatedUnderRootPost($rootPostId: ID!) {
+  replyCreatedUnderRootPost(rootPostId: $rootPostId) {
+    ...PostFields
+  }
+}
