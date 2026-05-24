@@ -16,10 +16,16 @@ tasks:
     cmds:
       - uv run pyright
 
+  test:
+    desc: Run pytest
+    cmds:
+      - uv run pytest
+
   check:
     desc: Run project checks
     cmds:
       - uv run pyright
+      - uv run pytest
 
   smoke:
     desc: Run a small live API smoke check

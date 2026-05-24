@@ -55,5 +55,6 @@ asyncio.run(main())
 ```bash
 task install
 task pyright
+task test
 task smoke
 ```
