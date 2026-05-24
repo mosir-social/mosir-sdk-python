@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import AsyncIterator, Awaitable, Mapping
-from typing import Any, TypeAlias, cast
+from typing import Any, Literal, TypeAlias, cast
 
 import httpx
 from graphql import OperationDefinitionNode, OperationType, get_operation_ast, parse
@@ -13,6 +13,21 @@ from .exceptions import GraphQLRequestError, GraphQLTransportError
 
 DEFAULT_ENDPOINT = "https://beta.mosir.app/api/v1"
 JSONMapping: TypeAlias = dict[str, Any]
+PreviewImageKind: TypeAlias = Literal["post", "profile", "post_collection"]
+
+MEDIA_PROFILE_FALLBACK_ORDER = [
+    "QUALITY",
+    "COMPATIBLE",
+    "THUMBNAIL",
+    "ANIMATED_COMPATIBLE",
+    "ANIMATED_THUMBNAIL",
+]
+
+PREVIEW_IMAGE_ROUTE_MAP: dict[PreviewImageKind, str] = {
+    "post": "postopengraph",
+    "profile": "profileopengraph",
+    "post_collection": "collectionopengraph",
+}
 
 
 class AsyncMosirClient:
@@ -62,6 +77,46 @@ class AsyncMosirClient:
     async def aclose(self) -> None:
         if self._owns_client:
             await self._client.aclose()
+
+    def select_media_file(
+        self,
+        media: Mapping[str, Any],
+        *,
+        profile: str | None = None,
+    ) -> JSONMapping | None:
+        return select_media_file(media, profile=profile)
+
+    async def fetch_media(
+        self,
+        media: Mapping[str, Any],
+        *,
+        profile: str | None = None,
+        headers: Mapping[str, str] | None = None,
+    ) -> bytes:
+        file = select_media_file(media, profile=profile)
+        if file is None:
+            raise ValueError("No media file is available for the requested media object.")
+
+        response = await self._client.get(file["url"], headers=self._build_headers(headers))
+        response.raise_for_status()
+        return response.content
+
+    def get_preview_image_url(self, kind: PreviewImageKind, resource_id: str) -> str:
+        return get_preview_image_url(kind, resource_id, endpoint=self.endpoint)
+
+    async def fetch_preview_image(
+        self,
+        kind: PreviewImageKind,
+        resource_id: str,
+        *,
+        headers: Mapping[str, str] | None = None,
+    ) -> bytes:
+        response = await self._client.get(
+            get_preview_image_url(kind, resource_id, endpoint=self.endpoint),
+            headers=self._build_headers(headers),
+        )
+        response.raise_for_status()
+        return response.content
 
     async def request(
         self,
@@ -173,6 +228,37 @@ class AsyncMosirClient:
         if headers:
             merged.update(headers)
         return merged
+
+
+def select_media_file(
+    media: Mapping[str, Any],
+    *,
+    profile: str | None = None,
+) -> JSONMapping | None:
+    raw_files = media.get("files")
+    if not isinstance(raw_files, list):
+        return None
+
+    files: list[JSONMapping] = [file for file in raw_files if isinstance(file, dict)]
+    if profile is not None:
+        return next((file for file in files if file.get("profile") == profile), None)
+
+    for candidate_profile in MEDIA_PROFILE_FALLBACK_ORDER:
+        candidate = next((file for file in files if file.get("profile") == candidate_profile), None)
+        if candidate is not None:
+            return candidate
+
+    return files[0] if files else None
+
+
+def get_preview_image_url(
+    kind: PreviewImageKind,
+    resource_id: str,
+    *,
+    endpoint: str = DEFAULT_ENDPOINT,
+) -> str:
+    base_url = httpx.URL(endpoint)
+    return str(base_url.copy_with(path=f"/ogi/{PREVIEW_IMAGE_ROUTE_MAP[kind]}/{resource_id}", query=None))
 
 
 def _get_operation_spec(name: str) -> OperationSpec:
