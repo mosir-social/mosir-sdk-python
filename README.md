@@ -2,19 +2,6 @@
 
 Python SDK for the Mosir public GraphQL API.
 
-## Status
-
-Production-ready async client library.
-
-Current focus:
-- async transport with `httpx`
-- dynamic snake_case wrappers resolved from `public.operations.graphql`
-- SSE subscriptions with `httpx-sse`
-- optional Bearer token auth
-- shared public artifacts:
-  - `public.graphqls`
-  - `public.operations.graphql`
-
 ## Install
 
 For package users:
