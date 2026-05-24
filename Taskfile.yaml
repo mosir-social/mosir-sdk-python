@@ -19,10 +19,10 @@ tasks:
   codegen:
     desc: Generate operation registry from public.operations.graphql
     cmds:
-      - uv run python ./scripts/generate_operations.py
+      - uv run python ./scripts/generate_operation_registry.py
     sources:
       - ./public.operations.graphql
-      - ./scripts/generate_operations.py
+      - ./scripts/generate_operation_registry.py
     generates:
       - ./src/mosir_sdk/_operations.py
 
