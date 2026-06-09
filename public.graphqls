@@ -242,6 +242,20 @@ enum PostCollectionPostOrder {
   LATEST
 }
 
+input PostCollectionSearchFilterInput {
+  authorID: ID
+}
+
+type PostCollectionSearchPage {
+  pageInfo: PageInfo!
+  postCollections: [PostCollectionSearchResult!]!
+}
+
+type PostCollectionSearchResult {
+  postCollection: PostCollection!
+  relevanceScore: Float
+}
+
 enum PostCommentPolicy {
   ALLOW_ALL
   ALLOW_FOLLOWERS
@@ -522,6 +536,9 @@ type Query {
 
   """List profile tags created by the current user."""
   listProfileTags(cursor: String, limit: Int): ProfileTagConnection!
+
+  """Search post collections by name."""
+  searchPostCollections(cursor: String, filter: PostCollectionSearchFilterInput, limit: Int, query: String!): PostCollectionSearchPage!
 }
 
 type ReactionDetailRecord {

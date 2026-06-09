@@ -36,7 +36,7 @@ tasks:
     desc: Run pytest
     deps: [codegen]
     cmds:
-      - uv run pytest
+      - uv run python -m pytest
 
   build:
     desc: Build wheel and source distribution
@@ -56,7 +56,7 @@ tasks:
     deps: [codegen]
     cmds:
       - uv run pyright
-      - uv run pytest
+      - uv run python -m pytest
       - task: package-check
 
   smoke:

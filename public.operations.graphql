@@ -228,6 +228,22 @@ fragment PostCollectionFields on PostCollection {
   }
 }
 
+fragment PostCollectionSearchResultFields on PostCollectionSearchResult {
+  postCollection {
+    ...PostCollectionFields
+  }
+  relevanceScore
+}
+
+fragment PostCollectionSearchPageFields on PostCollectionSearchPage {
+  postCollections {
+    ...PostCollectionSearchResultFields
+  }
+  pageInfo {
+    ...PageInfoFields
+  }
+}
+
 fragment MonoPostDraftFields on MonoPostDraft {
   content
   attachmentIds {
@@ -528,6 +544,12 @@ query GetPostCollection($id: ID!) {
   }
 }
 
+query SearchPostCollections($cursor: String, $filter: PostCollectionSearchFilterInput, $limit: Int = 20, $query: String!) {
+  searchPostCollections(cursor: $cursor, filter: $filter, limit: $limit, query: $query) {
+    ...PostCollectionSearchPageFields
+  }
+}
+
 query GetPostCollectionsByAuthor($authorID: ID!, $cursor: String, $limit: Int) {
   getPostCollectionsByAuthor(authorID: $authorID, cursor: $cursor, limit: $limit) {
     ...PostCollectionConnectionFields
@@ -550,8 +572,8 @@ query GetPostDraftsCount($filter: PostDraftFilterInput) {
   getPostDraftsCount(filter: $filter)
 }
 
-query GetPostReactionDetails($cursor: String, $limit: Int = 20, $postId: ID!, $type: ReactionTypeInput) {
-  getPostReactionDetails(cursor: $cursor, limit: $limit, postId: $postId, type: $type) {
+query GetPostReactionDetails($cursor: String, $limit: Int = 20, $postId: ID!, $reactionType: ReactionTypeInput) {
+  getPostReactionDetails(cursor: $cursor, limit: $limit, postId: $postId, type: $reactionType) {
     ...PostReactionDetailRecordConnectionFields
   }
 }
