@@ -338,6 +338,7 @@ type PostVisibility {
 
 enum PostVisibilityPolicy {
   FOLLOWERS
+  LOGGED_IN_ONLY
   MUTUAL_FOLLOWERS
   PUBLIC
   TAG_MEMBERS
