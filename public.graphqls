@@ -61,6 +61,10 @@ scalar DateTime
 
 scalar Emoji
 
+enum ExternalProfileProvider {
+  TWITCH
+}
+
 type FeedPostConnection {
   edges: [FeedPostEdge!]!
   pageInfo: PageInfo!
@@ -152,9 +156,12 @@ enum NativeReactionType {
 type Notification {
   createdAt: DateTime!
   id: ID!
+  isMultiUserReaction: Boolean
   isRead: Boolean!
   message: String
   reaction: ReactionType
+  reactionCount: Int
+  reactionVariantCount: Int
   relatedPost: Post
   relatedPostCollection: PostCollection
   relatedPostCollectionID: ID
@@ -356,6 +363,7 @@ type Profile {
   bio: String
   blockingStatus: BlockStatusInfo
   displayName: String
+  external: ProfileExternalInfo
   followerCount: Int!
   followingCount: Int!
 
@@ -379,6 +387,32 @@ type Profile {
 type ProfileConnection {
   edges: [Profile!]!
   pageInfo: PageInfo!
+}
+
+type ProfileExternalEdge {
+  edge: ProfileExternalLink!
+  type: ExternalProfileProvider!
+}
+
+type ProfileExternalInfo {
+  edges: [ProfileExternalEdge!]!
+}
+
+type ProfileExternalLink {
+  detail: ProfileExternalLinkDetail!
+  handle: String!
+  id: ID!
+  provider: ExternalProfileProvider!
+}
+
+union ProfileExternalLinkDetail = ProfileExternalLinkTwitchDetail
+
+type ProfileExternalLinkTwitchDetail {
+  displayName: String!
+  handle: String!
+  id: ID!
+  provider: ExternalProfileProvider!
+  streamStatus: TwitchStreamStatus
 }
 
 type ProfileFollowStatus {
@@ -604,6 +638,15 @@ type Topic {
   emoji: String!
   id: ID!
   title: String!
+}
+
+type TwitchStreamStatus {
+  accountID: ID!
+  gameName: String
+  isLive: Boolean!
+  startedAt: DateTime
+  title: String!
+  twitchUserID: String!
 }
 
 scalar Upload

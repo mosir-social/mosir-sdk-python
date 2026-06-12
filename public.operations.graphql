@@ -352,6 +352,9 @@ fragment NotificationFields on Notification {
   isRead
   message
   type
+  reactionCount
+  reactionVariantCount
+  isMultiUserReaction
   relatedPostID
   relatedPostCollectionID
   sourceProfileID
