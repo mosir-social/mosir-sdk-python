@@ -267,36 +267,59 @@ Authentication is optional. Pass `token` for authenticated operations, or omit i
 ### Operation usage
 
 ```python
-data = await client.operation("get_notifications", limit=20)
+import asyncio
+
+from mosir_sdk import AsyncMosirClient
+
+
+async def main() -> None:
+    async with AsyncMosirClient() as client:
+        data = await client.operation("get_notifications", limit=20)
+        print(data)
+
+
+asyncio.run(main())
 ```
 
 ### Raw GraphQL string usage
 
 ```python
-replies = await client.request(
-    """
-    query GetPostReplies($postId: ID!, $limit: Int) {
-      getPost(postId: $postId) {
-        id
-        commentsRecent(limit: $limit) {
-          edges {
-            id
-            content
-            createdAt
-            author {
-              username
-              displayName
+import asyncio
+
+from mosir_sdk import AsyncMosirClient
+
+
+async def main() -> None:
+    async with AsyncMosirClient() as client:
+        replies = await client.request(
+            """
+            query GetPostReplies($postId: ID!, $limit: Int) {
+              getPost(postId: $postId) {
+                id
+                commentsRecent(limit: $limit) {
+                  edges {
+                    id
+                    content
+                    createdAt
+                    author {
+                      username
+                      displayName
+                    }
+                  }
+                }
+              }
             }
-          }
-        }
-      }
-    }
-    """,
-    {
-        "postId": "VLO8u7UXqclQ7byjfMEX0",
-        "limit": 3,
-    },
-)
+            """,
+            {
+                "postId": "VLO8u7UXqclQ7byjfMEX0",
+                "limit": 3,
+            },
+        )
+
+        print(replies)
+
+
+asyncio.run(main())
 ```
 
 ## WebSocket usage
