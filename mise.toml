@@ -1,3 +1,8 @@
+min_version = "2026.11.0"
+
+[settings]
+task.source_freshness_hash_contents = true
+
 [tasks.install]
 description = "Install dependencies with uv"
 run = "uv sync"
