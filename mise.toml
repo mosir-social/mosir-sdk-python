@@ -1,0 +1,46 @@
+[tasks.install]
+description = "Install dependencies with uv"
+run = "uv sync"
+
+[tasks.format]
+description = "Check Python syntax with compileall"
+run = "uv run python -m compileall src"
+
+[tasks.clean]
+description = "Remove local build artifacts"
+run = "rm -rf build dist src/*.egg-info .pytest_cache"
+
+[tasks.codegen]
+description = "Generate operation registry from public.operations.graphql"
+sources = ["public.operations.graphql", "scripts/generate_operation_registry.py"]
+outputs = ["src/mosir_sdk/_operations.py"]
+run = "uv run python ./scripts/generate_operation_registry.py"
+
+[tasks.pyright]
+description = "Run pyright type checking"
+depends = ["codegen"]
+run = "uv run pyright"
+
+[tasks.test]
+description = "Run pytest"
+depends = ["codegen"]
+run = "uv run python -m pytest"
+
+[tasks.build]
+description = "Build wheel and source distribution"
+depends = ["codegen"]
+run = ["mise run clean", "uv build"]
+
+[tasks.package-check]
+description = "Validate package metadata and distribution rendering"
+depends = ["build"]
+run = "uvx twine check dist/*"
+
+[tasks.check]
+description = "Run project checks"
+depends = ["codegen"]
+run = ["uv run pyright", "uv run python -m pytest", "mise run package-check"]
+
+[tasks.smoke]
+description = "Run a small live API smoke check"
+run = "uv run python ./scripts/smoke.py"

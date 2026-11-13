@@ -9,6 +9,3 @@ src/*.egg-info
 
 # Virtual environments
 .venv
-
-# Task cache
-.task/
